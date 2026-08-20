@@ -1,0 +1,10 @@
+{
+  "name": "video-edit",
+  "description": "Raw footage in, finished edit out. /video-edit views your footage, transcribes locally (no API key), optionally rough-cuts retakes and dead air, then builds contextual motion graphics overlays (glassmorphism + 3 more presets, animated SVGs, SFX) in Remotion and renders the final video.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Abhinav"
+  },
+  "repository": "https://github.com/loveforthegame/video-edit",
+  "license": "MIT"
+}

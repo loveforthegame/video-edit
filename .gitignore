@@ -1,0 +1,9 @@
+node_modules/
+.venv/
+exports/
+out/
+*.mp4
+*.wav
+*.mp3
+template/public/*
+!template/public/.gitkeep
