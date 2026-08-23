@@ -93,36 +93,6 @@ the helpers in `template/src/beats.ts` do the arithmetic:
 Assign **one idea per section**, not per beat. An effect on every beat for 30
 seconds reads as noise and hides the dancing.
 
-## Step M5.5 — Lyrics on screen (only if the user wants them)
-
-`LyricHit` needs a word and a frame. Where the frame comes from depends on what
-the user gave you, best case first:
-
-1. **Synced lyrics (`.lrc`)** — parse the `[mm:ss.xx]` timestamps directly.
-   No whisper needed. Timestamps are in track time, which is video time as long
-   as the grid was built from the video's own audio.
-2. **Plain lyrics text** — whisper the video's audio (`whisper-cli -ml 1 -oj`
-   for word timestamps), then align whisper's words to the lyric lines with
-   fuzzy matching. **The pasted lyrics are ground truth for the words; whisper
-   is ground truth only for the timing.** Whisper mishears sung vocals
-   routinely, so never put whisper's own text on screen when real lyrics were
-   provided — match each lyric line to its whisper window and take the window's
-   start frame.
-3. **Nothing but the track** — whisper alone. Use only short hook words you can
-   verify by listening, and say in the checkpoint that lyric text is
-   best-effort.
-
-Placement rules:
-- Snap each line's entrance to the nearest beat frame when it lands within a
-  quarter-beat — vocals sit on the grid anyway, and the snap makes the type
-  read as part of the music instead of slightly late captions.
-- A few big hook words beat full-caption karaoke. One `LyricHit` per bar is
-  usually the ceiling; every lyric on screen turns the reel into a lyric video.
-- If a separate song file was used for transcription because the video's audio
-  was unusable, measure the offset between the two audios (cross-correlate, or
-  match the first downbeat) and shift every timestamp onto the video's
-  timeline before use. Skipping this puts every word late by the same amount.
-
 ## Step M6 — Build the overlay project
 
 As narration mode, plus:
