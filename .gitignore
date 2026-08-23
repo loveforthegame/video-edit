@@ -7,5 +7,3 @@ out/
 *.mp3
 template/public/*
 !template/public/.gitkeep
-# the template pins its deps in package.json; the lockfile is regenerated per copy
-template/package-lock.json

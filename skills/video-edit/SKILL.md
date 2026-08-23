@@ -1,16 +1,11 @@
 ---
 name: video-edit
-description: "Full video edit pipeline: raw footage in, finished edit out. Invoke as /video-edit with a video file path and optionally a free-text brief. Runs in one of two modes. NARRATION MODE views the footage, transcribes locally with whisper.cpp (no API key), optionally rough-cuts retakes/dead air, then builds contextual animated overlays (glassmorphism and 3 more presets, hand-built animated SVGs, SFX) in Remotion. MUSIC MODE detects the tempo and beat grid locally (no API key, no packages) and builds beat-locked effects on the footage itself — punch, shake, echo trails, stutter, speed ramps, chromatic split, glitch, audio-reactive graphics. Use when the user says /video-edit, wants a video edited, wants motion graphics added to footage, wants a dance or music video cut to the beat, or wants a raw recording turned into a polished reel/ad."
+description: "Full video edit pipeline: raw footage in, finished motion-graphics edit out. Invoke as /video-edit with a video file path and optionally a free-text brief. Views the footage, transcribes locally with whisper.cpp (no API key), optionally rough-cuts retakes/dead air, then builds contextual animated overlays (glassmorphism and 3 more presets, hand-built animated SVGs, SFX) in Remotion and renders the final video. Use when the user says /video-edit, wants a video edited, wants motion graphics added to footage, or wants a raw recording turned into a polished reel/ad."
 ---
 
 # /video-edit — footage to finished edit
 
 One command. The user gives raw footage plus (optionally) a free-text brief. You deliver a rendered video with contextual motion graphics playing OVER the footage.
-
-**Two modes.** This file is the narration-driven pipeline: someone is talking, and
-the graphics illustrate what they say. If the footage is carried by music instead
-(a dance reel, a music video, anything cut to the beat), steps 4-7 are replaced by
-`DANCE.md` in this folder — read it before building. Step 2 decides which.
 
 ## Step 0 — Dependencies (handle silently, install what's missing)
 
@@ -28,14 +23,12 @@ Remotion itself needs no global install: the scaffold step runs `npm install` in
 
 SFX are optional and not bundled (licensing). Resolution order: a `sfx/` folder next to the footage → `~/.claude/skills/video-shotcraft/assets/audio/` if present → render without SFX (delete the `<Audio>` lines). Never block on missing SFX.
 
-Music mode needs nothing beyond Node: `engine/beatgrid.mjs` has no packages and reads `.wav` without ffmpeg. whisper is still worth running once, to decide the mode.
-
 ## Step 1 — Intake (1-2 questions maximum)
 
 If the invocation already contains a brief, skip the brief question. Ask at most:
 
 1. **Brief** (free text): "What's this video for, and what should it push the viewer to do?" Accept whatever they write; parse goal, CTA, brand names, tone from it.
-2. **Preset / look** — text descriptions only, with a suggestion based on the footage. In music mode offer the four *looks* from `DANCE.md` instead (hype, neon, film, clean). The narration presets are:
+2. **Preset** — text descriptions only, with a suggestion based on the footage (bright footage → glass; dark/tech → dark-hud; loud UGC/meme energy → neo-brutal; fashion/premium → minimal):
    - **glass** — frosted translucent cards, soft springs. Default for bright UGC/SaaS ads.
    - **dark-hud** — dark translucent panels, neon edges. Tech, gaming, dev tools.
    - **neo-brutal** — solid white cards, thick black outlines, hard offset shadows. Loud, punchy.
@@ -49,7 +42,6 @@ Never ask more than these two. Everything else is inferred.
 2. Extract frames (`fps=0.5..1`, scaled small) and **actually view them**. Note: burned-in captions? talking head or b-roll? where is the face? bright or dark?
 3. Extract 16kHz mono WAV, transcribe with `whisper-cli -m <model> -f audio.wav -osrt -ml 60` for sentence lines.
 4. Detect existing BGM: measure RMS (`astats`) in a speech gap. If ≥ -30dB there is music — add no BGM, keep SFX subtle.
-5. **Pick the mode.** Count the words whisper returned. Fewer than ~8 words total, or under ~1 word per second across the clip, means there is no narration to illustrate — this is music mode. The brief overrides the count: "dance", "reel", "cut it to the beat", or a named song means music mode even over a talking clip. **In music mode, stop here and follow `DANCE.md` from step M1**; steps 4-7 below do not apply and the speech rough cut in step 4 would damage the take.
 
 ## Step 3 — The one checkpoint
 

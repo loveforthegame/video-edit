@@ -7,10 +7,7 @@
     "strict": false,
     "skipLibCheck": true,
     "esModuleInterop": true,
-    "noEmit": true,
-    "resolveJsonModule": true
+    "noEmit": true
   },
-  "include": [
-    "src"
-  ]
+  "include": ["src"]
 }
