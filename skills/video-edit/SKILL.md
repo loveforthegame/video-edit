@@ -135,9 +135,14 @@ Pacing presets, since Hard Rule 4 forbids ad-hoc numbers:
 | Preset | `RC_SILENCE_MERGE` | `RC_MIN_CHUNK` | Use when |
 |---|---:|---:|---|
 | calm | 1.2 | 1.0 | long-form, cinematic, considered delivery |
-| measured | 0.9 | 0.8 | explainer, demo, tutorial |
-| paced | 0.6 | 0.6 | **default** — most UGC and ads |
-| energetic | 0.4 | 0.4 | fast reads, short-form hooks |
+| measured | 0.9 | 1.0 | explainer, demo, tutorial |
+| paced | 0.6 | 0.6 | **default** — tight ad reads, most UGC |
+| energetic | 0.3 | 0.4 | fast reads, short-form hooks, short clips |
+
+`RC_SILENCE_MERGE` is a *merge* threshold — gaps shorter than it get absorbed,
+so **higher means calmer**: fewer, longer chunks. `RC_MIN_CHUNK` drops fragments
+below its length. The engine's own defaults are `0.30` / `1.0`; `paced` sits at
+0.6 because tight ad reads need more merging than conversational speech.
 
 Never slice inside a fluently delivered sentence. Ordinary 30–200ms inter-word
 gaps are articulation, not cut targets; multiple cuts inside one spoken sentence
@@ -196,6 +201,7 @@ PYTHONPATH=. uv run --no-project --with "openai,rapidfuzz,numpy" python roughcut
 
 ### Hard layout rules
 - Overlays live in the top ~35% and side margins, and only in cells `footage.md` says are free.
+- NEVER cover the speaker's eyes or mouth. NEVER cover burned-in captions — usually the bottom ~500px of a 1920-tall frame, and whatever band mode A reported as `burned_in_text`. The grid enforces this per-frame; these are the fallbacks when a cell reads ambiguous.
 - Existing captions/subtitles are untouched. Original audio untouched (SFX mixed on top at volume ≤ 0.45).
 - Graphics run over the footage while it plays. A dead outro card alone is a failure.
 - Something must always be moving: entrances via spring, idle via `floatY`, exits before the sequence ends.
