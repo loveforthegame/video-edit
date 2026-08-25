@@ -2,6 +2,8 @@
 
 A single Claude Code plugin. Give it raw footage and a one-line brief, get back a rendered video with contextual motion graphics playing over your footage: glassmorphism cards, hand-built animated SVGs (self-drawing checkmarks, flying envelopes, toggles, cursors, sparkles), punch-in energy, and SFX — all synced to what the narration is actually saying.
 
+**It runs autonomously.** No questions, no approval gate, no options to pick. It infers what you would have chosen, and writes every call it made — and the evidence behind it — to `edit/decisions.md` alongside the video.
+
 ## Install (one step)
 
 In Claude Code:
@@ -26,10 +28,11 @@ That's it. **No other setup.** The skill checks and installs its own prerequisit
 ```
 
 The skill will:
-1. Ask at most 2 short questions (your brief if you didn't give one, and a preset pick with a suggestion)
-2. Watch the footage + transcribe it, then show you ONE plan card to approve
+1. Send a **blind scout** over the footage — it sees the frames but never your brief, and writes a fixed-schema occupancy grid to `footage.md` so nothing downstream has to guess where the face is
+2. Transcribe locally, pick a preset from the evidence, and decide the cut — recording each call rather than asking
 3. Rough-cut retakes/dead air if the footage needs it (engine adapted from Manthan Patel's open-source rough-cut engine — runs fully local)
-4. Build the motion graphics in Remotion, QA its own frames, render, and hand you the file
+4. Build 2–4 overlay variants, render them as **stills** (seconds, not minutes) and let an **adversarial critic** pick the winner — the maker never approves its own work
+5. Render the winner, audit the result against the grid with assertions rather than impressions, and hand you the file plus `decisions.md`
 
 ## Presets
 
@@ -48,7 +51,9 @@ All four drive the same scene system: notification stacks, brand cards, toggles,
 video-edit/
 ├── .claude-plugin/plugin.json
 ├── skills/video-edit/SKILL.md   # the pipeline the agent follows
-├── engine/                      # local rough-cut engine (waveform + whisper, no API key)
+├── agents/footage-scout.md      # blind perception -> footage.md occupancy grid
+├── agents/edit-critic.md        # adversarial gate: scores plans, audits renders
+├── engine/                      # rough-cut engine + perceive.sh frame sampler
 └── template/                    # Remotion overlay project (presets, scenes, animated SVG icons)
 ```
 
